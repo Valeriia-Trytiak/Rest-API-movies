@@ -1,21 +1,20 @@
-import * as moviesService from "../models/movies/index.js";
+import Movie from "../models/Movie.js";
 //все динамические части маршрута находятся в объекте req.params
 //тело запроса находится в req.body
 // здесь лежат контраллеры обработки запросов (саму с массивом данных импортирую из другого файла) - здесь проверка значений и валидация ошибок
 
 import { HttpError } from "../helpers/index.js";
-import { movieAddSchema, movieUpdateSchema } from "../schemas/movie-schemas.js";
 import { ctrWrapper } from "../decorators/index.js";
 
 const getAll = async (req, res) => {
-  const result = await moviesService.getAllMovies();
+  const result = await Movie.find({}, "-createdAt -updatedAt");
   res.json(result);
   //если передадим в next error он пойдет искать мидлвар в который передано 4 аргумента: app.use((err, req, res, next)
 };
 
 const getById = async (req, res) => {
   const { id } = req.params;
-  const result = await moviesService.getMovieById(id);
+  const result = await Movie.findById(id);
   if (!result) {
     throw HttpError(404, `Movie with id=${id} not found`); // если фильм с таким айди не найдем, возвращается нал
     //   const error = new Error(`Movie with id=${id} not found`);
@@ -29,13 +28,13 @@ const getById = async (req, res) => {
 };
 
 const add = async (req, res) => {
-  const result = await moviesService.addMovie(req.body);
+  const result = await Movie.create(req.body);
   res.status(201).json(result);
 };
 
 const updateById = async (req, res) => {
   const { id } = req.params;
-  const result = await moviesService.updateMovieById(id, req.body);
+  const result = await Movie.findByIdAndUpdate(id, req.body);
   if (!result) {
     throw HttpError(404, `Movie with id=${id} not found`);
   }
@@ -44,7 +43,7 @@ const updateById = async (req, res) => {
 
 const deleteById = async (req, res) => {
   const { id } = req.params;
-  const result = await moviesService.deleteById(id);
+  const result = await Movie.findByIdAndDelete(id);
   if (!result) {
     throw HttpError(404, `Movie with id=${id} not found`);
   }
