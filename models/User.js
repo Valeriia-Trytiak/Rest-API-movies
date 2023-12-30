@@ -2,23 +2,24 @@
 import { Schema, model } from "mongoose";
 import Joi from "joi";
 
-import { handleSaveError, handleUpdate } from "./hooks";
+import { handleSaveError, handleUpdate } from "./hooks.js";
 
 const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 const userSchema = new Schema(
   {
     username: {
       type: String,
-      require: true,
+      required: true,
     },
     email: {
       type: String,
       match: emailRegex,
-      require: true,
+      unique: true, // перевіряємо (дає команду базі стровити унікальний індекс)на унікальність в коллекції
+      required: true,
     },
     password: {
       type: String,
-      require: true,
+      required: true,
       minlength: 6,
     },
   },

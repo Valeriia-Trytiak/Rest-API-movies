@@ -3,7 +3,7 @@ const ctrWrapper = (ctr) => {
     try {
       await ctr(req, res, next);
     } catch (error) {
-      next();
+      next(error);
     }
   };
   return func;
