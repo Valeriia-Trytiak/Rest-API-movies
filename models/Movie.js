@@ -30,6 +30,11 @@ const movieSchema = new Schema(
       match: releaseYearRegexp, // если необходимо сделать проверку с регулярным выражением
       required: true,
     },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user", // пишем из какой коллекции ищем айди
+      required: true,
+    },
   },
   { versionKey: false, timestamps: true }
 ); // первый аргумент - схема валидации того, что сохраняется в БД, второй аргумент - объект настроек (в нашем случае удаляем автоматически созданый ключ версии и добавляем дату создания и дату обновления)

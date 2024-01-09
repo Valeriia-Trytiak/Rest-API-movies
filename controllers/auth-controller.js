@@ -24,7 +24,7 @@ import "dotenv/config";
 //   const compareResult = await bcrypt.compare(password, result); //метод логанизации пользователя - проверяет есть ли второй аргумент хэштрованной версией первого аргумента, если да - возвращает тру
 // };
 
-const { JWS_SECRET } = process.env;
+const { JWT_SECRET } = process.env;
 const signup = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }); //перевфряємо перед створенням користувача чи є такий ємейл у базі
@@ -53,14 +53,28 @@ const signin = async (req, res) => {
 
   const { _id: id } = user;
   const payload = { id };
-  const token = jwt.sign(payload, JWS_SECRET, { expiresIn: "23h" }); //вважається пропуском, що прикріплюється до кожного запиту, щоб не робити аутенфікацію на кожний запит
-
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "23h" }); //вважається пропуском, що прикріплюється до кожного запиту, щоб не робити аутенфікацію на кожний запит
+  await User.findByIdAndUpdate(id, { token });
   res.json({
     token,
   });
 };
 
+const getCurrent = async (req, res) => {
+  const { username, email } = req.user;
+  res.json({ username, email });
+};
+
+const signout = async (req, res) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate(id, { token: "" });
+
+  res.json({ message: "Signout success" });
+};
+
 export default {
   signup: ctrWrapper(signup),
   signin: ctrWrapper(signin),
+  getCurrent: ctrWrapper(getCurrent),
+  signout: ctrWrapper(signout),
 };

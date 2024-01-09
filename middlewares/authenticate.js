@@ -16,9 +16,10 @@ const authenticate = async (req, res, next) => {
   try {
     const { id } = jwt.verify(token, JWT_SECRET); // если токен валидный, он выбрамывает пейлоад и нужно проверить существует ли пользователь с таким айди
     const user = await User.findById(id);
-    if (!user) {
+    if (!user || !user.token || token !== user.token) {
       return next(HttpError(401)); //если юзера нет с таким айди, передаем ошибку, если есть - некст
     }
+    req.user = user; // записали в объект ответа всю информаци. про пользователя, что деалет запрос.
     next();
   } catch (error) {
     next(HttpError(401, error.message)); //сюда выкидывает ошибку если не валидный токен (не был зафиврован с помощью нашей строки или если время жизни  токена закончилось)
