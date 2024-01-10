@@ -1,3 +1,5 @@
+import fs from "fs/promises";
+import path from "path";
 import Movie from "../models/Movie.js";
 //все динамические части маршрута находятся в объекте req.params
 //тело запроса находится в req.body
@@ -6,6 +8,9 @@ import Movie from "../models/Movie.js";
 import { HttpError } from "../helpers/index.js";
 import { ctrWrapper } from "../decorators/index.js";
 import User from "../models/User.js";
+
+//создаем новый путь к папке хранения постеров:
+const posterPath = path.resolve("public", "posters");
 
 const getAll = async (req, res) => {
   const { _id: owner } = req.user;
@@ -35,7 +40,11 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
   const { _id: owner } = req.user;
-  const result = await Movie.create(...req.body, owner);
+  const { path: oldPath, filename } = req.file; //берем полный путь к файлу включая его имя(старый путь)
+  const newPath = path.join(posterPath, filename); // отвечает за объединения пути - правильно расставляет слеши
+  await fs.rename(oldPath, newPath); //ренейм отвечает за перемещение файла
+  const poster = path.join("posters", filename); //относительній путь к файлу
+  const result = await Movie.create(...req.body, poster, owner);
   res.status(201).json(result);
 };
 

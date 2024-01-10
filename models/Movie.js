@@ -30,6 +30,10 @@ const movieSchema = new Schema(
       match: releaseYearRegexp, // если необходимо сделать проверку с регулярным выражением
       required: true,
     },
+    poster: {
+      type: String,
+      required: true,
+    },
     owner: {
       type: Schema.Types.ObjectId,
       ref: "user", // пишем из какой коллекции ищем айди

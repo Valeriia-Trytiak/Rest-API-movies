@@ -3,7 +3,7 @@
 import express from "express";
 
 import moviesController from "../../controllers/movies-controller.js";
-import { isEmplyBody, isValidId, authenticate } from "../../middlewares/index.js";
+import { isEmplyBody, isValidId, authenticate, upload } from "../../middlewares/index.js";
 import { validateBody } from "../../decorators/index.js";
 import { movieAddSchema, movieUpdateSchema, movieUpdateFavoriteSchema } from "../../models/Movie.js";
 const moviesRouter = express.Router();
@@ -14,7 +14,9 @@ moviesRouter.get("/", moviesController.getAll); //получили запрос,
 
 moviesRouter.get("/:id", moviesController.getById);
 
-moviesRouter.post("/", isEmplyBody, validateBody(movieAddSchema), moviesController.add); // добавили мидл вар, который проверяет, что поля не пустые при отправке нового фильма
+//upload.fields([{name:"poster", maxCount: 8}])
+//upload.array("название поля", максимальное число файлов)
+moviesRouter.post("/", upload.single("poster"), isEmplyBody, validateBody(movieAddSchema), moviesController.add); // добавили мидл вар, который проверяет, что поля не пустые при отправке нового фильма. Мидл вар аплоад - загрузка файла (если будет только один файл - сингл, если несколько полей - арей)
 
 moviesRouter.put("/:id", isEmplyBody, validateBody(movieUpdateSchema), moviesController.updateById);
 moviesRouter.patch(
